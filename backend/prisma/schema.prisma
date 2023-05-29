@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(uuid())
+  username       String
+  name           String
+  password       String
+  expoToken      String
+  level          Int
+  created_at     DateTime
+  refresh_token  RefreshToken? @relation(fields: [refreshTokenId], references: [id])
+  refreshTokenId String?
+
+  @@unique([username])
+  @@map("user")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  category_id String
+  created_at  DateTime
+  image       String
+
+  @@map("product")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  title       String
+  created_at  DateTime
+
+  @@map("category")
+}
+
+model Image {
+  id          String   @id @default(uuid())
+  uri         String
+  product_id  String
+  created_at  DateTime
+
+  @@map("image")
+}
+
+model RefreshToken {
+  id       String @id @default(uuid())
+  expireIn Int
+  userId   String
+  User     User[]
+
+  @@map("refreshToken")
+}
